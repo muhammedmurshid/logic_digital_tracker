@@ -1,6 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 
-access_digital_task,access_digital_task,model_digital_task,base.group_user,1,1,1,1
-access_digital_task_type,access_digital_task_type,model_digital_task_type,base.group_user,1,1,1,1
+access_digital_task,access_digital_task,model_digital_task,base.group_user,1,1,1,0
+access_digital_task_head,access_digital_task_head,model_digital_task,logic_digital_tracker.group_digital_head,1,1,1,1
+
+access_digital_task_type,access_digital_task_type,model_digital_task_type,base.group_user,1,1,1,0
 access_digital_assign_wizard,access_digital_assign_wizard,model_digital_task_assign_wizard,logic_digital_tracker.group_digital_head,1,1,1,1
 access_digital_send_post_wizard,access_digital_send_post_wizard,model_digital_post_wizard,logic_digital_tracker.group_digital_head,1,1,1,1

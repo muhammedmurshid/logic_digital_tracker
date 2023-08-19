@@ -1,5 +1,5 @@
 from odoo import fields, models, api
-
+from datetime import datetime
 class AssignWizard(models.TransientModel):
     _name = "digital.task.assign.wizard"
     assigned_execs = fields.Many2many('res.users',string="Assign to",domain=lambda self: [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_executive').users.ids)], required=True)
@@ -13,6 +13,7 @@ class AssignWizard(models.TransientModel):
                 summary=f'Digital Task from {self.digital_task_id.task_creator.name}')
         self.digital_task_id.write(
             {
+                'date_assigned': datetime.today(),
                 'date_deadline': self.date_deadline,
                 'assigned_execs': self.assigned_execs,
                 'state': 'assigned',

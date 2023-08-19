@@ -1,25 +1,56 @@
 from odoo import models,fields,api
 from odoo.exceptions import UserError
+from datetime import datetime
 class DigitalTask(models.Model):
     _name = "digital.task"
+    # _rec_name = "name"
     _description = "Digital Task"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     name = fields.Char(string="Name")
     task_type = fields.Many2one('digital.task.type',string="Task Type",required=True)
-    task_head = fields.Many2one('res.users',required=True,domain=lambda self:  [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_head').users.ids)])
-    assigned_execs = fields.Many2many('res.users',string="Assigned Executives",domain=lambda self: [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_executive').users.ids)])
+    
+    def _compute_display_name(self):
+        for record in self:
+            if record.assigned_execs:
+                name = record.name + ": "
+                for exec in record.assigned_execs:
+                    name+= exec.name+", "
+                name = name[0:len(name)-2]
+                record.display_name = name
+            else:
+                record.display_name = record.name
+    display_name = fields.Char(compute="_compute_display_name")
+    
+    task_head = fields.Many2one('res.users',string="Digital Head", required=True,domain=lambda self:  [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_head').users.ids)])
+    assigned_execs = fields.Many2many('res.users',string="Assigned To",domain=lambda self: [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_executive').users.ids)])
+    
+    def _compute_execs_display(self):
+        for record in self:
+            if not record.assigned_execs:
+                record.execs_display = ''
+            else:
+                name=""
+                for exec in record.assigned_execs:
+                    name+= exec.name + ", "
+                name = name[0:len(name)-2]
+                record.execs_display = name
+    execs_display = fields.Char(compute="_compute_execs_display")
+    
     task_creator = fields.Many2one('res.users',string="Task Creator", default= lambda self: self.env.user.id)
     description = fields.Text(string="Description")
-    state = fields.Selection(selection=[('1_draft','Draft'),('sent_to_approve','Sent to Approve'),('approved','Approved'),('assigned','Assigned'),('in_progress','In Progress'),('completed','Completed'),('to_post','To Post'),('posted','Posted')], default=False)
+    state = fields.Selection(string="Status", selection=[('1_draft','Draft'),('sent_to_approve','Sent to Approve'),('approved','Approved'),('assigned','Assigned'),('in_progress','In Progress'),('completed','Completed'),('to_post','To Post'),('posted','Posted')], default=False)
     tags_ids = fields.Many2many('project.tags', string='Tags')
     priority = fields.Selection([
         ('normal', 'Normal'), ('urgent', 'Urgent')
     ], string='Priority', default='normal')
     is_assigned = fields.Boolean()
     expected_date = fields.Date(string="Expected Date", required=True)
-    date_deadline = fields.Date(string="Deadline",)
+    date_assigned = fields.Date(string="Task Assigned On",readonly=True)
+    date_completed = fields.Date(string="Date of Completion")
+    date_deadline = fields.Date(string="Deadline",readonly=True)
     social_manager = fields.Many2one('res.users',string="Social Media Manager", domain=lambda self: [('id', 'in', self.env.ref('logic_digital_tracker.group_social_manager').users.ids)])
     date_to_post = fields.Date(string="Date to Post",)
+    date_posted = fields.Date(string="Posted On")
 
     @api.model
     def create(self,vals):
@@ -68,6 +99,7 @@ class DigitalTask(models.Model):
 
         self.message_post(body=f"Status Changed: In Progress -> Completed")
         self.state = 'completed'
+        self.date_completed = datetime.today()
 
     def action_revert_to_in_progress(self):
         self.message_post(body=f"Status Changed: Completed -> In Progress")
@@ -77,6 +109,8 @@ class DigitalTask(models.Model):
                 summary=f'Digital Task from {self.task_creator.name}')
 
         self.state = 'in_progress'
+        self.date_completed = False
+
 
     def action_send_to_post(self):
         return {
@@ -87,3 +121,11 @@ class DigitalTask(models.Model):
             'target': 'new',
             # 'context': {'}
         }
+
+    def action_social_post(self):
+        activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
+        activity_obj.action_feedback(feedback=f'Posted')
+        self.write({
+            'state': 'posted',
+            'date_posted': datetime.today(),
+        })
