@@ -94,7 +94,7 @@
                     <button name="action_send_to_post" string="Send to Post" groups="logic_digital_tracker.group_digital_head" help="Click here to create an activity for Social Media Manager to post" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','completed')]}"/>
                     <button name="action_social_post" string="Set as Posted" groups="logic_digital_tracker.group_digital_head,logic_digital_tracker.group_social_manager" help="Click here to set status as posted (Usually done by Social Media Manager)" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','to_post')]}"/>
 
-                    <field name="state" widget="statusbar" statusbar_visible="1_draft,sent_to_approve,approved,assigned,in_progress,completed"/>
+                    <field name="state" widget="statusbar" statusbar_visible="1_draft,sent_to_approve,approved,assigned,in_progress,completed,to_post,posted"/>
                 </header>
                 <sheet>
                     <div class="oe_title pr-0">
@@ -109,6 +109,7 @@
                             <field name="description"/>
                             <field name="task_head"/>
                             <field name="expected_date"/>
+                            <field name="task_creator" readonly="1"/>
                             
                             <field name="tags_ids" widget="many2many_tags"/>
                         </group>
