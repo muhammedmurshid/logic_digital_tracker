@@ -38,7 +38,7 @@ class DigitalTask(models.Model):
     
     task_creator = fields.Many2one('res.users',string="Task Creator", default= lambda self: self.env.user.id)
     description = fields.Text(string="Description")
-    state = fields.Selection(string="Status", selection=[('1_draft','Draft'),('sent_to_approve','Sent to Approve'),('approved','Approved'),('assigned','Assigned'),('in_progress','In Progress'),('completed','Completed'),('to_post','To Post'),('posted','Posted')], default=False)
+    state = fields.Selection(string="Status", selection=[('1_draft','Draft'),('sent_to_approve','Sent to Approve'),('approved','Approved'),('assigned','Assigned'),('in_progress','In Progress'),('completed','Completed'),('to_post','To Post'),('posted','Posted'),('cancelled','Cancelled')], default=False)
     tags_ids = fields.Many2many('project.tags', string='Tags')
     priority = fields.Selection([
         ('normal', 'Normal'), ('urgent', 'Urgent')
@@ -51,6 +51,14 @@ class DigitalTask(models.Model):
     social_manager = fields.Many2one('res.users',string="Social Media Manager", domain=lambda self: [('id', 'in', self.env.ref('logic_digital_tracker.group_social_manager').users.ids)])
     date_to_post = fields.Date(string="Date to Post",)
     date_posted = fields.Date(string="Posted On")
+    fold = fields.Boolean(compute="_compute_fold")
+
+    def _compute_fold(self):
+        for record in self:
+            if record.state in ('cancelled','posted'):
+                record.fold = True
+            else:
+                record.fold = False
 
     @api.model
     def create(self,vals):
@@ -62,6 +70,14 @@ class DigitalTask(models.Model):
         self.activity_schedule('logic_digital_tracker.mail_activity_type_digital_task', user_id=self.task_head.id,
                                summary=f'To Approve: Digital Task from {self.task_creator.name}')
         self.state = 'sent_to_approve'
+    
+    def action_cancel(self):
+        activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
+        if activity_obj:
+            activity_obj.action_feedback(feedback=f"Task Cancelled")
+        current_status = dict(self._fields['state']._description_selection(self.env))[self.state]
+        self.message_post(body=f"Status Changed: {current_status} -> Cancelled")
+        self.state = 'cancelled'
 
     def action_approve(self):
         activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])

@@ -26,7 +26,7 @@
                             </div>
                             <div class="o_kanban_record_body">
 
-                                <span attrs="{'invisible':[('state','in',(False,'1_draft','sent_to_approve','approved'))]}">
+                                <span attrs="{'invisible':[('state','in',(False,'1_draft','sent_to_approve','approved','cancelled'))]}">
                                     <b>Assigned To: </b><field name="execs_display"/>
                                     <br/>
                                 </span>
@@ -63,7 +63,7 @@
 
                                     <!--                                <field name="kanban_state" widget="state_selection" groups="base.group_user"-->
                                     <!--                                       invisible="context.get('fsm_mode', False)"/>-->                           '
-                                    <field name="task_head" widget="many2one_avatar_user"/>
+                                    <field name="task_creator" widget="many2one_avatar_user"/>
 
                                     <!-- <field name="assigned_execs" >
                                         <field name="name" widget="many2many_tags"/>
@@ -93,6 +93,7 @@
                     <button name="action_revert_to_in_progress" string="Revert to In Progress" groups="logic_digital_tracker.group_digital_head" help="Click here to reset the status of task to In Progress" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','completed')]}"/>
                     <button name="action_send_to_post" string="Send to Post" groups="logic_digital_tracker.group_digital_head" help="Click here to create an activity for Social Media Manager to post" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','completed')]}"/>
                     <button name="action_social_post" string="Set as Posted" groups="logic_digital_tracker.group_digital_head,logic_digital_tracker.group_social_manager" help="Click here to set status as posted (Usually done by Social Media Manager)" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','to_post')]}"/>
+                    <button name="action_cancel" string="Cancel" help="Click here to cancel the task" type="object" attrs="{'invisible':[('state','not in',('1_draft','sent_to_approve','approved') )]}"/>
 
                     <field name="state" widget="statusbar" statusbar_visible="1_draft,sent_to_approve,approved,assigned,in_progress,completed,to_post,posted"/>
                 </header>
