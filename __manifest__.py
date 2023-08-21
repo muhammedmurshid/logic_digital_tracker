@@ -5,8 +5,8 @@
     'sequence': "0",
     'depends': ['base','mail','logic_base','faculty'],
     'data': [
-        'security/ir.model.access.csv',
         'security/groups.xml',
+        'security/ir.model.access.csv',
         'security/record_rules.xml',
         'views/digital_task_views.xml',
         'wizard/wizard_views.xml',
