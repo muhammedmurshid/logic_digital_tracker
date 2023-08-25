@@ -176,7 +176,8 @@
     </record>
     <menuitem name="Digital Tracker" id="menu_digital_tracker"
               action="digital_task_action"
-              sequence="9"/>
+              sequence="9"
+              web_icon="logic_digital_tracker/static/description/icon.png"/>
 
     <menuitem name="Tasks" id="menu_digital_tasks"
               action="digital_task_action"
