@@ -1,5 +1,5 @@
 {
-    'name': "Digital Tracker",
+    'name': "Digital Requirements",
     'author': 'Rizwaan',
     'version': "14.0.1.0",
     'sequence': "0",
@@ -14,7 +14,7 @@
 
     ],
     'demo': [],
-    'summary': "Logic Loans",
+    'summary': "Digital Requirements",
     'description': "",
     'installable': True,
     'auto_install': False,

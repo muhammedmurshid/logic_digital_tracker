@@ -51,6 +51,8 @@
                                 <field name="assigned_execs" >
                                     <field name="name" widget="many2one_avatar_user"/>
                                 </field> -->
+                                <field name="tags_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
+
                             </div>
                             <div class="o_kanban_record_bottom" t-if="!selection_mode">
                                 <div class="oe_kanban_bottom_left" t-if="!selection_mode" attrs="{'invisible':[('state','not in',('assigned','in_progress') )]}">
@@ -174,7 +176,7 @@
         <field name="res_model">digital.task</field>
         <field name="view_mode">kanban,tree,form,calendar</field>
     </record>
-    <menuitem name="Digital Tracker" id="menu_digital_tracker"
+    <menuitem name="Digital Requirements" id="menu_digital_tracker"
               action="digital_task_action"
               sequence="9"
               web_icon="logic_digital_tracker/static/description/icon.png"/>
