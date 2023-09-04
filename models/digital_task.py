@@ -6,7 +6,7 @@ class DigitalTask(models.Model):
     # _rec_name = "name"
     _description = "Digital Task"
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    name = fields.Char(string="Name")
+    name = fields.Char(string="Name",required=True)
     task_type = fields.Many2one('digital.task.type',string="Task Type",required=True)
     
     def _compute_display_name(self):
@@ -21,7 +21,13 @@ class DigitalTask(models.Model):
                 record.display_name = record.name
     display_name = fields.Char(compute="_compute_display_name")
     
-    task_head = fields.Many2one('res.users',string="Digital Head", required=True,domain=lambda self:  [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_head').users.ids)])
+    def get_default_digital_head(self):
+        head_users_ids = self.env.ref('logic_digital_tracker.group_digital_head').users.ids
+        if head_users_ids:
+            return head_users_ids[0]
+        else:
+            return False
+    task_head = fields.Many2one('res.users',string="Digital Head", required=True,domain=lambda self:  [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_head').users.ids)], default=get_default_digital_head)
     assigned_execs = fields.Many2many('res.users',string="Assigned To",domain=lambda self: [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_executive').users.ids)])
     
     def _compute_execs_display(self):
@@ -52,6 +58,10 @@ class DigitalTask(models.Model):
     date_to_post = fields.Date(string="Date to Post",)
     date_posted = fields.Date(string="Posted On")
     fold = fields.Boolean(compute="_compute_fold")
+    head_rating = fields.Selection(selection=[('0','No rating'),('1','Very Poor'),('2','Poor'),('3','Average'),('4','Good'),('5','Very Good')], string="Head Rating", default='0')
+    creator_rating = fields.Selection(selection=[('0','No rating'),('1','Very Poor'),('2','Poor'),('3','Average'),('4','Good'),('5','Very Good')], string="Creator Rating", default='0')
+
+    reach = fields.Integer(string="Reach")
 
     def _compute_fold(self):
         for record in self:
@@ -65,6 +75,21 @@ class DigitalTask(models.Model):
         vals['state'] = '1_draft'
         return super(DigitalTask,self).create(vals)
     
+    def write(self,vals):
+        if vals.get('head_rating'):
+            if vals['head_rating']!=self.head_rating:
+                if self.env.user.id != self.task_head.id:
+                    raise UserError("Only the Digital Head can modify the head rating!")
+        if vals.get('creator_rating'):
+            if vals['creator_rating']!=self.creator_rating:
+                if self.env.user.id != self.task_creator.id:
+                    raise UserError("Only the Task Creator can modify the creator rating!")
+        if vals.get('reach'):
+            if vals['reach']!=self.reach:
+                if self.env.user.id not in [self.task_head.id,self.social_manager.id]:
+                    raise UserError("Only the Digital Head or Social Media manager can update reach!")
+        return super(DigitalTask, self).write(vals)
+
     def action_confirm(self):
         self.message_post(body=f"Status Changed: Draft -> Sent to Approve")
         self.activity_schedule('logic_digital_tracker.mail_activity_type_digital_task', user_id=self.task_head.id,

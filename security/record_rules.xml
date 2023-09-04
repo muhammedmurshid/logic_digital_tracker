@@ -22,17 +22,17 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-        <record model="ir.rule" id="digital_task_creator">
-            <field name="name">Digital Executive - Access Created Tasks</field>
+        <record model="ir.rule" id="digital_task_social_manager_rule">
+            <field name="name">Social Media Manager - Access Own Tasks / To Post Tasks</field>
             <field name="model_id" ref="model_digital_task"/>
-            <field name="domain_force">['&amp;','|',('social_manager','=',user.id),('state','=','to_post'), ('task_creator','=',user.id)]</field>
+            <field name="domain_force">['|',('social_manager','=',user.id), ('task_creator','=',user.id)]</field>
             <field name="groups" eval="[(4, ref('logic_digital_tracker.group_social_manager'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-        <record model="ir.rule" id="digital_social_manager">
+        <!-- <record model="ir.rule" id="digital_social_manager">
             <field name="name">Social Media Manager - Access Completed Tasks</field>
             <field name="model_id" ref="model_digital_task"/>
             <field name="domain_force">[('social_manager','=',user.id)]</field>
@@ -41,9 +41,9 @@
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
-        </record>
-        <record model="ir.rule" id="digital_task_creator">
-            <field name="name">Digital Executive - Access Created Tasks</field>
+        </record> -->
+        <record model="ir.rule" id="digital_task_creator_rule">
+            <field name="name">Base User - Access Created Tasks</field>
             <field name="model_id" ref="model_digital_task"/>
             <field name="domain_force">[('task_creator','=',user.id)]</field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>

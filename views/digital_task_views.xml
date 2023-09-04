@@ -92,11 +92,10 @@
                     <button name="action_assign" string="Assign Task" groups="logic_digital_tracker.group_digital_head" help="Click here to assign the task to executives" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','approved')]}"/>
                     <button name="action_in_progress" string="In Progress" groups="logic_digital_tracker.group_digital_head,logic_digital_tracker.group_digital_executive" help="Click here to set the status of task to In Progress" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','assigned')]}"/>
                     <button name="action_complete" string="Set as Completed" groups="logic_digital_tracker.group_digital_head,logic_digital_tracker.group_digital_executive" help="Click here to set the status of task to Completed" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','in_progress')]}"/>
-                    <button name="action_revert_to_in_progress" string="Revert to In Progress" groups="logic_digital_tracker.group_digital_head" help="Click here to reset the status of task to In Progress" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','completed')]}"/>
                     <button name="action_send_to_post" string="Send to Post" groups="logic_digital_tracker.group_digital_head" help="Click here to create an activity for Social Media Manager to post" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','completed')]}"/>
+                    <button name="action_revert_to_in_progress" string="Revert to In Progress" groups="logic_digital_tracker.group_digital_head" help="Click here to reset the status of task to In Progress" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','completed')]}"/>
                     <button name="action_social_post" string="Set as Posted" groups="logic_digital_tracker.group_digital_head,logic_digital_tracker.group_social_manager" help="Click here to set status as posted (Usually done by Social Media Manager)" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','to_post')]}"/>
                     <button name="action_cancel" string="Cancel" help="Click here to cancel the task" type="object" attrs="{'invisible':[('state','not in',('1_draft','sent_to_approve','approved') )]}"/>
-
                     <field name="state" widget="statusbar" statusbar_visible="1_draft,sent_to_approve,approved,assigned,in_progress,completed,to_post,posted"/>
                 </header>
                 <sheet>
@@ -113,18 +112,20 @@
                             <field name="task_head"/>
                             <field name="expected_date"/>
                             <field name="task_creator" readonly="1"/>
-                            
                             <field name="tags_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="assigned_execs" widget="many2many_tags" readonly="1" attrs="{'invisible':[('state','in',(False,'1_draft','sent_to_approve') )]}"/>
-                            <field name="date_assigned" attr="{'invisible':[('date_assigned','=',False)]}" readonly="1"/>
+                            <field name="date_assigned" attrs="{'invisible':[('date_assigned','=',False)]}" readonly="1"/>
                             <field name="date_deadline" attrs="{'invisible':[('date_deadline','=',False)]}" readonly="1"/>
                             <field name="date_completed" attrs="{'invisible':[('date_completed','=',False)]}" readonly="1"/>
                             <field name="social_manager" attrs="{'invisible':[('social_manager','=',False)]}" readonly="1"/>
                             <field name="date_to_post" attrs="{'invisible':[('date_to_post','=',False)]}"/>
                             <field name="date_posted" attrs="{'invisible':[('date_posted','=',False)]}"/>
-                            
+                            <field name="head_rating" widget="priority" attrs="{'invisible':[('state','not in',('completed','to_post','posted'))]}"/>
+                            <field name="creator_rating" widget="priority" attrs="{'invisible':[('state','not in',('completed','to_post','posted'))]}"/>
+                            <field name="reach" attrs="{'invisible':[('state','not in',('posted'))]}"/>
+
                         </group>
                     </group>
                 </sheet>
