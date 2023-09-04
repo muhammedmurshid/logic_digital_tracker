@@ -68,20 +68,21 @@ class DigitalTask(models.Model):
     def action_confirm(self):
         self.message_post(body=f"Status Changed: Draft -> Sent to Approve")
         self.activity_schedule('logic_digital_tracker.mail_activity_type_digital_task', user_id=self.task_head.id,
+                               res_id = self.id,
                                summary=f'To Approve: Digital Task from {self.task_creator.name}')
         self.state = 'sent_to_approve'
     
     def action_cancel(self):
-        activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
-        if activity_obj:
-            activity_obj.action_feedback(feedback=f"Task Cancelled")
+        # activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
+        if self.activity_ids:
+            self.activity_ids.action_feedback(feedback=f"Task Cancelled")
         current_status = dict(self._fields['state']._description_selection(self.env))[self.state]
         self.message_post(body=f"Status Changed: {current_status} -> Cancelled")
         self.state = 'cancelled'
 
     def action_approve(self):
-        activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
-        activity_obj.action_feedback(feedback=f"Task Approved")
+        # activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
+        self.activity_ids.action_feedback(feedback=f"Task Approved")
         self.state = 'approved'
     
     def action_assign(self):
@@ -109,8 +110,8 @@ class DigitalTask(models.Model):
         self.state  = 'in_progress'
 
     def action_complete(self):
-        activity_objs = self.env['mail.activity'].search([('res_id','=',self.id)])
-        for activity_obj in activity_objs:
+        # activity_objs = self.env['mail.activity'].search([('res_id','=',self.id)])
+        for activity_obj in self.activity_ids:
             activity_obj.action_feedback(feedback=f"Task Completed")
 
         self.message_post(body=f"Status Changed: In Progress -> Completed")
@@ -139,8 +140,8 @@ class DigitalTask(models.Model):
         }
 
     def action_social_post(self):
-        activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
-        activity_obj.action_feedback(feedback=f'Posted')
+        # activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
+        self.activity_ids.action_feedback(feedback=f'Posted')
         self.write({
             'state': 'posted',
             'date_posted': datetime.today(),
