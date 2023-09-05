@@ -2,7 +2,15 @@ from odoo import fields, models, api
 from datetime import datetime
 class AssignWizard(models.TransientModel):
     _name = "digital.task.assign.wizard"
-    assigned_execs = fields.Many2many('res.users',string="Assign to",domain=lambda self: [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_executive').users.ids)], required=True)
+
+    def get_digital_executives_domain(self):
+        digital_execs = self.env.ref('logic_digital_tracker.group_digital_executive').users.ids
+        if digital_execs:
+            digital_execs.append(self.env.user.id)
+            return [('id', 'in', digital_execs)]
+        else:
+            return [('id','in',[self.env.user.id])]
+    assigned_execs = fields.Many2many('res.users',string="Assign to",domain=get_digital_executives_domain, required=True)
     date_deadline = fields.Date(string="Deadline", required=True)
     digital_task_id = fields.Many2one('digital.task',string="Digital Task",required=True, default = lambda self: self.env.context.get('active_id'))
 

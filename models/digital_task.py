@@ -28,7 +28,15 @@ class DigitalTask(models.Model):
         else:
             return False
     task_head = fields.Many2one('res.users',string="Digital Head", required=True,domain=lambda self:  [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_head').users.ids)], default=get_default_digital_head)
-    assigned_execs = fields.Many2many('res.users',string="Assigned To",domain=lambda self: [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_executive').users.ids)])
+    
+    def get_digital_executives_domain(self):
+        digital_execs = self.env.ref('logic_digital_tracker.group_digital_executive').users.ids
+        if digital_execs:
+            digital_execs.append(self.env.user.id)
+            return [('id', 'in', digital_execs)]
+        else:
+            return [('id','in',[self.env.user.id])]
+    assigned_execs = fields.Many2many('res.users',string="Assigned To",domain=get_digital_executives_domain)
     
     def _compute_execs_display(self):
         for record in self:
@@ -91,6 +99,8 @@ class DigitalTask(models.Model):
         return super(DigitalTask, self).write(vals)
 
     def action_confirm(self):
+        print("sdfdsfdsASDFSDFD")
+
         self.message_post(body=f"Status Changed: Draft -> Sent to Approve")
         self.activity_schedule('logic_digital_tracker.mail_activity_type_digital_task', user_id=self.task_head.id,
                                res_id = self.id,
