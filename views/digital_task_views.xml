@@ -185,10 +185,26 @@
         </field>
     </record>
 
+    <record id="view_digital_task_type_tree" model="ir.ui.view">
+        <field name="name">digital.task.type.tree</field>
+        <field name="model">digital.task.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
     <record model="ir.actions.act_window" id="digital_task_action">
         <field name="name">Digital Tasks</field>
         <field name="res_model">digital.task</field>
         <field name="view_mode">kanban,tree,form,calendar,graph</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="digital_task_type_action">
+        <field name="name">Digital Tasks Type</field>
+        <field name="res_model">digital.task.type</field>
+        <field name="view_mode">tree,form</field>
     </record>
     <menuitem name="Digital Requirements" id="menu_digital_tracker"
               action="digital_task_action"
@@ -199,4 +215,9 @@
               action="digital_task_action"
               parent="menu_digital_tracker"
               sequence="2"/>
+
+    <menuitem name="Types" id="menu_digital_task_type"
+              action="digital_task_type_action"
+              parent="menu_digital_tracker"
+              sequence="3"/>
 </odoo>
