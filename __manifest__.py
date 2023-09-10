@@ -3,7 +3,7 @@
     'author': 'Rizwaan',
     'version': "14.0.1.0",
     'sequence': "0",
-    'depends': ['base','mail','logic_base','faculty'],
+    'depends': ['base','mail'],
     'data': [
         'security/groups.xml',
         'security/ir.model.access.csv',
@@ -11,6 +11,7 @@
         'views/digital_task_views.xml',
         'wizard/wizard_views.xml',
         'data/activity.xml',
+        'data/task_types.xml',
 
     ],
     'demo': [],
