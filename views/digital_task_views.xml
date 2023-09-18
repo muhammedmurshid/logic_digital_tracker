@@ -104,20 +104,20 @@
                 <sheet>
                     <div class="oe_title pr-0">
                         <h1 class="d-flex flex-row justify-content-between">
-                            <field name="name" class="mr-3" placeholder="Task Title..."/>
+                            <field name="name" class="mr-3" placeholder="Task Title..." attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
                             <field name="priority" widget="priority"/>
                         </h1>
                     </div>
                     <group>
                         <group>
-                            <field name="task_type"/>
-                            <field name="description"/>
-                            <field name="task_head"/>
-                            <field name="expected_date"/>
-                            <field name="expected_post_date"/>
+                            <field name="task_type" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
+                            <field name="description" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
+                            <field name="task_head" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
+                            <field name="expected_date" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
+                            <field name="expected_post_date" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
 
-                            <field name="task_creator" readonly="1"/>
-                            <field name="tags_ids" widget="many2many_tags"/>
+                            <field name="task_creator" readonly="1" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
+                            <field name="tags_ids" widget="many2many_tags" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
                         </group>
                         <group>
                             <field name="assigned_execs" widget="many2many_tags" readonly="1" attrs="{'invisible':[('state','in',(False,'1_draft','sent_to_approve') )]}"/>
@@ -125,7 +125,7 @@
                             <field name="date_deadline" attrs="{'invisible':[('date_deadline','=',False)]}" readonly="1"/>
                             <field name="date_completed" attrs="{'invisible':[('date_completed','=',False)]}" readonly="1"/>
                             <field name="social_manager" attrs="{'invisible':[('social_manager','=',False)]}" readonly="1"/>
-                            <field name="date_to_post" attrs="{'invisible':[('date_to_post','=',False)]}"/>
+                            <field name="date_to_post" attrs="{'invisible':[('date_to_post','=',False)]}" readonly="1"/>
                             <field name="date_posted" attrs="{'invisible':[('date_posted','=',False)]}"/>
                             <field name="head_rating" widget="priority" attrs="{'invisible':[('state','not in',('completed','to_post','posted'))]}"/>
                             <field name="creator_rating" widget="priority" attrs="{'invisible':[('state','not in',('completed','to_post','posted'))]}"/>
