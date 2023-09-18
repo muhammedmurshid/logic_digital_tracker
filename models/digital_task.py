@@ -52,13 +52,15 @@ class DigitalTask(models.Model):
     
     task_creator = fields.Many2one('res.users',string="Task Creator", default= lambda self: self.env.user.id)
     description = fields.Text(string="Description")
-    state = fields.Selection(string="Status", selection=[('1_draft','Draft'),('sent_to_approve','Sent to Approve'),('approved','Approved'),('assigned','Assigned'),('in_progress','In Progress'),('completed','Completed'),('to_post','To Post'),('posted','Posted'),('cancelled','Cancelled')], default=False)
+    state = fields.Selection(string="Status", selection=[('1_draft','Draft'),('sent_to_approve','Sent to Approve'),('approved','Approved'),('assigned','Assigned'),('in_progress','In Progress'),('completed','Completed'),('to_post','To Post'),('posted','Posted'),('cancelled','Cancelled'),('rejected','Rejected')], default=False)
     tags_ids = fields.Many2many('project.tags', string='Tags')
     priority = fields.Selection([
         ('normal', 'Normal'), ('urgent', 'Urgent')
     ], string='Priority', default='normal')
     is_assigned = fields.Boolean()
     expected_date = fields.Date(string="Expected Date", required=True)
+    expected_post_date = fields.Date(string="Expected Post Date")
+
     date_assigned = fields.Date(string="Task Assigned On",readonly=True)
     date_completed = fields.Date(string="Date of Completion")
     date_deadline = fields.Date(string="Deadline",readonly=True)
@@ -99,9 +101,11 @@ class DigitalTask(models.Model):
         return super(DigitalTask, self).write(vals)
 
     def action_confirm(self):
-        print("sdfdsfdsASDFSDFD")
+        if self.activity_ids:
+            self.activity_ids.unlink()
+        current_status = dict(self._fields['state']._description_selection(self.env))[self.state]
 
-        self.message_post(body=f"Status Changed: Draft -> Sent to Approve")
+        self.message_post(body=f"Status Changed: {current_status} -> Sent to Approve")
         self.activity_schedule('logic_digital_tracker.mail_activity_type_digital_task', user_id=self.task_head.id,
                                res_id = self.id,
                                summary=f'To Approve: Digital Task from {self.task_creator.name}')
@@ -110,15 +114,29 @@ class DigitalTask(models.Model):
     def action_cancel(self):
         # activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
         if self.activity_ids:
-            self.activity_ids.action_feedback(feedback=f"Task Cancelled")
+            self.activity_ids.unlink()
         current_status = dict(self._fields['state']._description_selection(self.env))[self.state]
+        self.message_post(body=f"Task cancelled by {self.env.user.name}")
         self.message_post(body=f"Status Changed: {current_status} -> Cancelled")
         self.state = 'cancelled'
 
     def action_approve(self):
-        # activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
-        self.activity_ids.action_feedback(feedback=f"Task Approved")
+        self.activity_ids.unlink()
+        self.message_post(body=f"Task Approved by {self.task_head.name}")
+        current_status = dict(self._fields['state']._description_selection(self.env))[self.state]
+        self.message_post(body=f"Status Changed: {current_status} -> Approved")
+
         self.state = 'approved'
+
+    def action_reject(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Reject Task',
+            'res_model': 'digital.reject.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            # 'context': {'default_action_type':'assign'}
+        }
     
     def action_assign(self):
         return {
@@ -127,7 +145,17 @@ class DigitalTask(models.Model):
             'res_model': 'digital.task.assign.wizard',
             'view_mode': 'form',
             'target': 'new',
-            # 'context': {'}
+            'context': {'default_action_type':'assign'}
+        }
+    
+    def action_reassign(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Assign Task',
+            'res_model': 'digital.task.assign.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_action_type':'reassign'}
         }
     
         # if len(self.assigned_execs)>0:
@@ -147,8 +175,7 @@ class DigitalTask(models.Model):
     def action_complete(self):
         # activity_objs = self.env['mail.activity'].search([('res_id','=',self.id)])
         for activity_obj in self.activity_ids:
-            activity_obj.action_feedback(feedback=f"Task Completed")
-
+            activity_obj.unlink()
         self.message_post(body=f"Status Changed: In Progress -> Completed")
         self.state = 'completed'
         self.date_completed = datetime.today()
@@ -176,7 +203,8 @@ class DigitalTask(models.Model):
 
     def action_social_post(self):
         # activity_obj = self.env['mail.activity'].search([('res_id','=',self.id)])
-        self.activity_ids.action_feedback(feedback=f'Posted')
+        self.activity_ids.unlink()
+        self.message_post(body="Posted in Social Media")
         self.write({
             'state': 'posted',
             'date_posted': datetime.today(),
