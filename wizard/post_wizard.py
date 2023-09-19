@@ -17,4 +17,4 @@ class PostWizard(models.TransientModel):
 
         })
         current_status = dict(self.digital_task_id._fields['state']._description_selection(self.env))[self.digital_task_id.state]
-        self.message_post(body=f"Status Changed: {current_status} -> Send to Post")
+        self.digital_task_id.message_post(body=f"Status Changed: {current_status} -> Send to Post")
