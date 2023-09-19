@@ -36,6 +36,7 @@
                             <field name="digital_task_id" invisible="1"/>
                             <field name="date_to_post"/>
                             <field name="social_manager" widget="many2many_tags"/>
+                            <field name="social_platform"/>
 
                             <!-- <field name="payment_request_id"/> -->
                         </group>
@@ -55,12 +56,27 @@
             <field name="arch" type="xml">
                 <form string="Send to Post">
                     <group>
-                        <group>
                             <field name="reject_reason"/>
-                        </group>
                     </group>
                     <footer>
                         <button string="Reject Task" name="action_reject" type="object" help="This will reject the task" class="oe_highlight"/>
+                        <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="digital_suggestion_form_view" model="ir.ui.view">
+            <field name="name">Suggestion</field>
+            <field name="model">digital.suggestion.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Suggestion">
+                    <group>
+                            <field name="suggestion"/>
+                    </group>
+                    <footer>
+                        <button string="Suggest" name="action_suggest" type="object" help="This will send an activity with suggestions to the digital head" class="oe_highlight"/>
                         <button string="Cancel" class="btn btn-secondary" special="cancel"/>
                     </footer>
                 </form>
@@ -73,6 +89,15 @@
             <field name="res_model">digital.reject.wizard</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="digital_reject_form_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Define the action -->
+        <record id="digital_suggestion_action" model="ir.actions.act_window">
+            <field name="name">Suggestion Action</field>
+            <field name="res_model">digital.suggestion.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="digital_suggestion_form_view"/>
             <field name="target">new</field>
         </record>
 

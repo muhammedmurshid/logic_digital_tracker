@@ -70,8 +70,15 @@ class DigitalTask(models.Model):
     fold = fields.Boolean(compute="_compute_fold")
     head_rating = fields.Selection(selection=[('0','No rating'),('1','Very Poor'),('2','Poor'),('3','Average'),('4','Good'),('5','Very Good')], string="Head Rating", default='0')
     creator_rating = fields.Selection(selection=[('0','No rating'),('1','Very Poor'),('2','Poor'),('3','Average'),('4','Good'),('5','Very Good')], string="Creator Rating", default='0')
-
+    def _compute_is_task_creator(self):
+        for record in self:
+            if self.env.user.id == self.task_creator.id:
+                record.is_task_creator = True
+            else:
+                record.is_task_creator = False
+    is_task_creator = fields.Boolean(compute="_compute_is_task_creator")
     reach = fields.Integer(string="Reach")
+
 
     def _compute_fold(self):
         for record in self:
@@ -127,6 +134,16 @@ class DigitalTask(models.Model):
         self.message_post(body=f"Status Changed: {current_status} -> Approved")
 
         self.state = 'approved'
+
+    def action_suggest(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Suggest Changes',
+            'res_model': 'digital.suggestion.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            # 'context': {'default_action_type':'assign'}
+        }
 
     def action_reject(self):
         return {
