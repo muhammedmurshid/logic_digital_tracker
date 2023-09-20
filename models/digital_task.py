@@ -39,6 +39,7 @@ class DigitalTask(models.Model):
             return [('id','in',[self.env.user.id])]
     assigned_execs = fields.Many2many('res.users',string="Assigned To",domain=get_digital_executives_domain)
     
+    @api.depends('assigned_execs')
     def _compute_execs_display(self):
         for record in self:
             if not record.assigned_execs:
@@ -49,7 +50,7 @@ class DigitalTask(models.Model):
                     name+= exec.name + ", "
                 name = name[0:len(name)-2]
                 record.execs_display = name
-    execs_display = fields.Char(compute="_compute_execs_display")
+    execs_display = fields.Char(string="Assigned Executives", compute="_compute_execs_display",store=True)
     
     task_creator = fields.Many2one('res.users',string="Task Creator", default= lambda self: self.env.user.id)
     description = fields.Text(string="Description")
