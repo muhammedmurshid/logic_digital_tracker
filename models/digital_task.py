@@ -9,6 +9,7 @@ class DigitalTask(models.Model):
     name = fields.Char(string="Name",required=True)
     task_type = fields.Many2one('digital.task.type',string="Task Type",required=True)
     
+    @api.depends('assigned_execs','name')
     def _compute_display_name(self):
         for record in self:
             if record.assigned_execs:

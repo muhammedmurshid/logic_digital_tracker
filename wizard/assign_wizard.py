@@ -36,11 +36,6 @@ class AssignWizard(models.TransientModel):
             activity_obj.unlink()
         old_exec_names = ', '.join([exec.name for exec in self.digital_task_id.assigned_execs])
         new_exec_names = ', '.join([exec.name for exec in self.assigned_execs])
-        self.digital_task_id.message_post(body=f"Task Re-assigned from: <b>{old_exec_names}</b>  to: <b>{new_exec_names}</b>")
-        for exec in self.assigned_execs:
-            self.digital_task_id.activity_schedule('logic_digital_tracker.mail_activity_type_digital_task', user_id=exec.id,
-                date_deadline=self.date_deadline,
-                summary=f'Digital Task from {self.digital_task_id.task_creator.name}')
         self.digital_task_id.write(
             {
                 'date_assigned': datetime.today(),
@@ -50,3 +45,8 @@ class AssignWizard(models.TransientModel):
                 'is_assigned': True,
             }
         )
+        self.digital_task_id.message_post(body=f"Task Re-assigned from: <b>{old_exec_names}</b>  to: <b>{new_exec_names}</b>")
+        for exec in self.assigned_execs:
+            self.digital_task_id.activity_schedule('logic_digital_tracker.mail_activity_type_digital_task', user_id=exec.id,
+                date_deadline=self.date_deadline,
+                summary=f'Digital Task from {self.digital_task_id.task_creator.name}')

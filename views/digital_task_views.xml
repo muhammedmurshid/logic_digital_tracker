@@ -79,6 +79,16 @@
         </field>
     </record>
 
+    <record id="digital_task_search" model="ir.ui.view">
+        <field name="name">digital.task.search</field>
+        <field name="model">digital.task</field>
+        <field name="arch" type="xml">
+            <search>
+                <filter string="Not Draft" name="not_draft" domain="[('state', '!=','1_draft')]"/>
+            </search>
+        </field>
+    </record>
+
 
     <record id="digital_tasks_form" model="ir.ui.view">
         <field name="name">Digital Tasks</field>
@@ -208,6 +218,8 @@
         <field name="name">Digital Tasks</field>
         <field name="res_model">digital.task</field>
         <field name="view_mode">kanban,tree,form,calendar,graph</field>
+        <field name="context">{"search_default_not_draft":1}</field>
+
     </record>
 
     <record model="ir.actions.act_window" id="digital_task_type_action">
