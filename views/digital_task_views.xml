@@ -7,7 +7,7 @@
         <field name="type">kanban</field>
         <field name="priority" eval="100"/>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile" default_group_by="state" default_order="date_deadline" archivable="false"
+            <kanban class="o_kanban_mobile" default_group_by="state" default_order="date_deadline desc" archivable="false"
                     sample="1" quick_create="0">
                 <field name="name"/>
                 <field name="state" default_order="state" readonly="1"/>
