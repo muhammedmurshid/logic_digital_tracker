@@ -18,3 +18,17 @@ class PostWizard(models.TransientModel):
         })
         current_status = dict(self.digital_task_id._fields['state']._description_selection(self.env))[self.digital_task_id.state]
         self.digital_task_id.message_post(body=f"Status Changed: {current_status} -> Send to Post")
+
+class RepostWizard(models.Model):
+    _name = "digital.repost.wizard"
+    digital_task_id = fields.Many2one('digital.task',string="Digital Task",required=True, default = lambda self: self.env.context.get('active_id'))
+    date_to_post = fields.Date(string="Date to Post", required=True)
+    social_platform = fields.Char(string="Social Media", required=True)
+
+    def action_repost(self):
+        self.digital_task_id.activity_schedule('logic_digital_tracker.mail_activity_type_digital_task', user_id=self.digital_task_id.task_head.id,
+                               date_deadline = self.date_to_post,
+                               summary=f'Request to Repost in {self.social_platform}',
+                                note=f"<b>Task:</b> {self.digital_task_id.name}<br/>\
+                                    <b>Type:</b> {self.digital_task_id.task_type.name}"
+                                )

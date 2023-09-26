@@ -83,6 +83,29 @@
             </field>
         </record>
 
+        <record id="digital_repost_form_view" model="ir.ui.view">
+            <field name="name">Ask to Repost</field>
+            <field name="model">digital.repost.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Send to Repost">
+                    <group>
+                        <group>
+                            <field name="digital_task_id" invisible="1"/>
+                            <field name="date_to_post"/>
+                            <field name="social_platform"/>
+
+                            <!-- <field name="payment_request_id"/> -->
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Ask to Repost" name="action_repost" type="object" help="This will create an activity for Digital Head to request a repost in social media" class="oe_highlight"/>
+                        <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
         <!-- Define the action -->
         <record id="digital_reject_action" model="ir.actions.act_window">
             <field name="name">Reject Action</field>
@@ -118,5 +141,14 @@
             <field name="view_id" ref="digital_send_post_form_view"/>
             <field name="target">new</field>
         </record>
+
+       <!-- Define the action -->
+       <record id="digital_repost_action" model="ir.actions.act_window">
+        <field name="name">Repost Action</field>
+        <field name="res_model">digital.repost.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="digital_reject_form_view"/>
+        <field name="target">new</field>
+    </record>
     </data>
 </odoo>

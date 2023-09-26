@@ -228,3 +228,13 @@ class DigitalTask(models.Model):
             'state': 'posted',
             'date_posted': datetime.today(),
         })
+
+    def action_repost(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Ask to Repost',
+            'res_model': 'digital.repost.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            # 'context': {'}
+        }
