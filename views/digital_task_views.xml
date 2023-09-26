@@ -110,7 +110,7 @@
 
                     <button name="action_revert_to_in_progress" string="Revert to In Progress" groups="logic_digital_tracker.group_digital_head" help="Click here to reset the status of task to In Progress" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','completed')]}"/>
                     <button name="action_social_post" string="Set as Posted" groups="logic_digital_tracker.group_digital_head,logic_digital_tracker.group_social_manager" help="Click here to set status as posted (Usually done by Social Media Manager)" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','to_post')]}"/>
-                    <button name="action_repost" string="Ask to Repost" help="Click here to ask the Digital Head to repost the task" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','posted'),('is_task_creator','=',False)]}"/>
+                    <button name="action_repost" string="Ask to Repost" help="Click here to ask the Digital Head to repost the task" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','not in',('completed','to_post','posted')),('is_task_creator','=',False)]}"/>
 
                     <button name="action_cancel" string="Cancel" help="Click here to cancel the task" type="object" attrs="{'invisible':[('state','not in',('1_draft','sent_to_approve','approved') )]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="1_draft,sent_to_approve,approved,assigned,in_progress,completed,to_post,posted"/>
