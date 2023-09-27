@@ -21,6 +21,9 @@ class AssignWizard(models.TransientModel):
                 summary=f'Digital Task from {self.digital_task_id.task_creator.name}',
                 note=f"<b>Task:</b> {self.digital_task_id.name}<br/>\
                         <b>Type:</b> {self.digital_task_id.task_type.name}")
+        exec_names = ', '.join([exec.name for exec in self.assigned_execs])
+        self.digital_task_id.message_post(body=f"Task Assigned to: <b>{exec_names}</b>")
+
         self.digital_task_id.write(
             {
                 'date_assigned': datetime.today(),
