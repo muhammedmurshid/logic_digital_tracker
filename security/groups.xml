@@ -9,6 +9,10 @@
             <field name="name">Digital Head</field>
             <field name="category_id" ref="logic_digital_tracker.digital_tracker_groups"/>
         </record>
+        <record id="group_digital_hr_manager" model="res.groups">
+            <field name="name">HR Manager</field>
+            <field name="category_id" ref="logic_digital_tracker.digital_tracker_groups"/>
+        </record>
         <record id="group_digital_executive" model="res.groups">
             <field name="name">Digital Executive</field>
             <field name="category_id" ref="logic_digital_tracker.digital_tracker_groups"/>

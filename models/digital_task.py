@@ -1,6 +1,7 @@
 from odoo import models,fields,api
 from odoo.exceptions import UserError
 from datetime import datetime
+import logging
 class DigitalTask(models.Model):
     _name = "digital.task"
     # _rec_name = "name"
@@ -31,12 +32,10 @@ class DigitalTask(models.Model):
     task_head = fields.Many2one('res.users',string="Digital Head", required=True,domain=lambda self:  [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_head').users.ids)], default=get_default_digital_head)
     
     def get_digital_executives_domain(self):
-        digital_execs = self.env.ref('logic_digital_tracker.group_digital_executive').users.ids
-        if digital_execs:
-            digital_execs.append(self.env.user.id)
-            return [('id', 'in', digital_execs)]
-        else:
-            return [('id','in',[self.env.user.id])]
+        execs = []
+        execs.extend(self.sudo().env.ref('logic_digital_tracker.group_digital_executive').users.ids)
+        execs.extend(self.sudo().env.ref('logic_digital_tracker.group_digital_head').users.ids)
+        return [('id', 'in', execs)]
     assigned_execs = fields.Many2many('res.users',string="Assigned To",domain=get_digital_executives_domain)
     
     @api.depends('assigned_execs')
@@ -52,6 +51,15 @@ class DigitalTask(models.Model):
                 record.execs_display = name
     execs_display = fields.Char(string="Assigned Executives", compute="_compute_execs_display",store=True)
     
+    is_dig_head = fields.Boolean(compute="_compute_is_dig_head")
+
+    def _compute_is_dig_head(self):
+        for record in self:
+            if self.env.user.has_group('logic_digital_tracker.group_digital_head'):
+                record.is_dig_head = True
+            else:
+                record.is_dig_head = False  
+   
     task_creator = fields.Many2one('res.users',string="Task Creator", default= lambda self: self.env.user.id)
     description = fields.Text(string="Description")
     state = fields.Selection(string="Status", selection=[('1_draft','Draft'),('sent_to_approve','Sent to Approve'),('approved','Approved'),('assigned','Assigned'),('in_progress','In Progress'),('completed','Completed'),('to_post','To Post'),('posted','Posted'),('cancelled','Cancelled'),('rejected','Rejected')], default=False)
@@ -72,6 +80,7 @@ class DigitalTask(models.Model):
     fold = fields.Boolean(compute="_compute_fold")
     head_rating = fields.Selection(selection=[('0','No rating'),('1','Very Poor'),('2','Poor'),('3','Average'),('4','Good'),('5','Very Good')], string="Head Rating", default='0')
     creator_rating = fields.Selection(selection=[('0','No rating'),('1','Very Poor'),('2','Poor'),('3','Average'),('4','Good'),('5','Very Good')], string="Creator Rating", default='0')
+    contributions = fields.One2many("digital.task.contribution","task_id",string="Contributions")
     def _compute_is_task_creator(self):
         for record in self:
             if self.env.user.id == self.task_creator.id:
@@ -79,6 +88,7 @@ class DigitalTask(models.Model):
             else:
                 record.is_task_creator = False
     is_task_creator = fields.Boolean(compute="_compute_is_task_creator")
+
     reach = fields.Integer(string="Reach")
 
 
@@ -238,3 +248,40 @@ class DigitalTask(models.Model):
             'target': 'new',
             # 'context': {'}
         }
+    
+class DigitalTaskContribution(models.Model):
+    _name = "digital.task.contribution"
+    task_id = fields.Many2one("digital.task",string="Digital Task")
+
+    def get_digital_executives_domain(self):
+        task = self.env['digital.task'].browse(self.env.context.get('active_id'))
+        digital_execs = task.assigned_execs
+        execs_domain = []
+        logger = logging.getLogger("Debugger: ")
+        logger.error("Execs: "+str(task.contributions.mapped('executive')))
+        if digital_execs:
+            for exec in digital_execs:
+                execs_domain.append(exec.id)
+
+        return [('id', 'in', execs_domain),('id','not in',task.contributions.mapped('executive.id'))]
+    
+    def get_total_percentage(self,records):
+        return sum(records.mapped('contribution'))
+
+    @api.onchange("contribution")
+    def on_contrib_change(self):
+        self.contribution = self.contribution%101
+        if self._origin:
+            other_contrs = self.env['digital.task.contribution'].search([('task_id','=',self._origin.task_id.id),('id','!=',self._origin.id)])
+            total_percs_cur_recs = self.get_total_percentage(other_contrs)
+            if (total_percs_cur_recs+self.contribution)>100:
+                equal_part = round( (100-self.contribution)/len(other_contrs),2)
+                for task_contr in other_contrs:
+                    task_contr.write({
+                        'contribution':equal_part,
+                    })
+
+      
+
+    executive = fields.Many2one('res.users',string="Executive",required=True)
+    contribution = fields.Float(string="Contribution (%)")

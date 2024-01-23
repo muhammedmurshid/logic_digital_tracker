@@ -124,7 +124,8 @@
                     </div>
                     <group>
                         <group>
-                            
+                            <field name="is_dig_head" invisible="1"/>
+
                             <field name="is_task_creator" invisible="1"/>
                             <field name="task_type" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
                             <field name="description" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
@@ -149,12 +150,24 @@
 
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Contributions">
+                            <field name="contributions" >
+                                <tree editable="bottom">
+                                    <field name="executive" options="{'no_create':True}" domain="[('id','in',parent.assigned_execs)]" attrs="{'readonly':[('parent.is_dig_head','=',False)]}"/>
+                                    <field name="contribution" attrs="{'readonly':[('parent.is_dig_head','=',False)]}"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
+                <!-- <div class="oe_edit_only"> -->
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
                     <field name="activity_ids"/>
                     <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
                 </div>
+                <!-- </div> -->
 
             </form>
         </field>
@@ -213,6 +226,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="score"/>
             </tree>
         </field>
     </record>
