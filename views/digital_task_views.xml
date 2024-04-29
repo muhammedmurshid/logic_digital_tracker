@@ -116,16 +116,18 @@
                     <field name="state" widget="statusbar" statusbar_visible="1_draft,sent_to_approve,approved,assigned,in_progress,completed,to_post,posted"/>
                 </header>
                 <sheet>
+                    <widget name="web_ribbon" title="Completed" bg_color="bg-success"
+                            attrs="{'invisible': [('state', '!=', 'completed')]}"/>
                     <div class="oe_title pr-0">
                         <h1 class="d-flex flex-row justify-content-between">
                             <field name="name" class="mr-3" placeholder="Task Title..." attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
                             <field name="priority" widget="priority"/>
                         </h1>
                     </div>
+
                     <group>
                         <group>
                             <field name="is_dig_head" invisible="1"/>
-
                             <field name="is_task_creator" invisible="1"/>
                             <field name="task_type" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
                             <field name="description" attrs="{'readonly':[('state','not in',(False,'1_draft','sent_to_approve','rejected'))]}"/>
@@ -152,7 +154,7 @@
                     </group>
                     <notebook>
                         <page string="Contributions">
-                            <field name="contributions" >
+                            <field name="contributions">
                                 <tree editable="bottom">
                                     <field name="executive" options="{'no_create':True}" domain="[('id','in',parent.assigned_execs)]" attrs="{'readonly':[('parent.is_dig_head','=',False)]}"/>
                                     <field name="contribution" attrs="{'readonly':[('parent.is_dig_head','=',False)]}"/>

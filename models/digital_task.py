@@ -202,12 +202,20 @@ class DigitalTask(models.Model):
         self.state  = 'in_progress'
 
     def action_complete(self):
+
         # activity_objs = self.env['mail.activity'].search([('res_id','=',self.id)])
         for activity_obj in self.activity_ids:
             activity_obj.unlink()
         self.message_post(body=f"Status Changed: In Progress -> Completed")
         self.state = 'completed'
         self.date_completed = datetime.today()
+        return {
+            'effect': {
+                'fadeout': 'slow',
+                'message': 'Task Completed',
+                'type': 'rainbow_man',
+            }
+        }
 
     def action_revert_to_in_progress(self):
         self.message_post(body=f"Status Changed: Completed -> In Progress")
