@@ -199,7 +199,7 @@ class DigitalTask(models.Model):
     def action_in_progress(self):
         self.message_post(body=f"Status Changed: Assigned -> In Progress")
 
-        self.state  = 'in_progress'
+        self.state = 'in_progress'
 
     def action_complete(self):
 
@@ -209,6 +209,11 @@ class DigitalTask(models.Model):
         self.message_post(body=f"Status Changed: In Progress -> Completed")
         self.state = 'completed'
         self.date_completed = datetime.today()
+        self.env['logic.task.other'].sudo().create({'name':self.name,
+                                                    'task_types':'other',
+                                                    })
+        rec = self.env['logic.task.other'].search([], limit=1, order='id desc')
+        rec.sudo().write({'state': 'completed'})
         return {
             'effect': {
                 'fadeout': 'slow',
@@ -216,6 +221,7 @@ class DigitalTask(models.Model):
                 'type': 'rainbow_man',
             }
         }
+
 
     def action_revert_to_in_progress(self):
         self.message_post(body=f"Status Changed: Completed -> In Progress")
