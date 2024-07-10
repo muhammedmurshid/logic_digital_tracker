@@ -8,6 +8,7 @@
     <menuitem name="Birthdays" id="current_month_birthdays"
               action="current_month_birthdays_action"
               parent="menu_digital_tracker"
+              groups="logic_digital_tracker.group_digital_executive"
               sequence="4"/>
     <record id="form_view_of_current_month_birthdays" model="ir.ui.view">
         <field name="name">current.month.birthdays</field>
