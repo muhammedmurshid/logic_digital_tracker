@@ -26,3 +26,4 @@ access_digital_task_contrib_in,access_digital_task_contrib_head,model_digital_ta
 access_digital_task_contrib_user,access_digital_task_contrib_user,model_digital_task_contribution,base.group_user,1,0,0,0
 
 access_project_tags_all,project.project_tags_all,project.model_project_tags,base.group_user,1,1,1,0
+access_current_month_birthdays,access_current_month_birthdays,model_current_month_birthdays,base.group_user,1,0,0,0
