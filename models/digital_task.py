@@ -29,7 +29,7 @@ class DigitalTask(models.Model):
             return head_users_ids[0]
         else:
             return False
-    task_head = fields.Many2one('res.users',string="Digital Head", required=True,domain=lambda self:  [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_head').users.ids)], default=get_default_digital_head)
+    task_head = fields.Many2one('res.users',string="Creative Head", required=True,domain=lambda self:  [('id', 'in', self.env.ref('logic_digital_tracker.group_digital_head').users.ids)], default=get_default_digital_head)
     
     def get_digital_executives_domain(self):
         execs = []
