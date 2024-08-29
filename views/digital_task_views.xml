@@ -327,19 +327,19 @@
               parent="menu_digital_tracker"
               sequence="3"/>
 
-    <menuitem name="Leaves" id="menu_leaves_for_own_child"
-              parent="menu_digital_tracker"
-              sequence="5"
-              groups="logic_digital_tracker.group_digital_head"/>
+<!--    <menuitem name="Leaves" id="menu_leaves_for_own_child"-->
+<!--              parent="menu_digital_tracker"-->
+<!--              sequence="5"-->
+<!--              groups="logic_digital_tracker.group_digital_head"/>-->
 
-    <menuitem name="Time Off" id="menu_time_off_dpt_digital"
-              action="hr_holidays.hr_leave_action_action_approve_department"
-              parent="menu_leaves_for_own_child"
-              sequence="3"/>
+<!--    <menuitem name="Time Off" id="menu_time_off_dpt_digital"-->
+<!--              action="hr_holidays.hr_leave_action_action_approve_department"-->
+<!--              parent="menu_leaves_for_own_child"-->
+<!--              sequence="3"/>-->
 
-    <menuitem name="Allocation" id="menu_leave_allocation_dpt_digital"
-              action="hr_holidays.hr_leave_allocation_action_approve_department"
-              parent="menu_leaves_for_own_child"
-              sequence="5"/>
+<!--    <menuitem name="Allocation" id="menu_leave_allocation_dpt_digital"-->
+<!--              action="hr_holidays.hr_leave_allocation_action_approve_department"-->
+<!--              parent="menu_leaves_for_own_child"-->
+<!--              sequence="5"/>-->
 
 </odoo>
